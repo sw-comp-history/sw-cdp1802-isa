@@ -1,6 +1,6 @@
 //! Reference vectors for the CDP1802 demo subset.
 
-use sw_cdp1802_isa::{Addr, Cdp1802, Instruction, Reg};
+use sw_cdp1802_isa::{Addr, Cdp1802, ExternalFlag, Instruction, Reg};
 use sw_isa_core::Architecture;
 
 const DEMO_BYTES: &[u8] = &[
@@ -56,12 +56,50 @@ fn demo_subset_exact_encodings() {
             &[0x30, 0x13],
         ),
         (
+            "b1 0x80",
+            Instruction::BranchExternalFlag {
+                flag: ExternalFlag::Ef1,
+                expected: true,
+                target: 0x80,
+            },
+            &[0x34, 0x80],
+        ),
+        (
+            "b4 0x80",
+            Instruction::BranchExternalFlag {
+                flag: ExternalFlag::Ef4,
+                expected: true,
+                target: 0x80,
+            },
+            &[0x37, 0x80],
+        ),
+        (
+            "bn1 0x80",
+            Instruction::BranchExternalFlag {
+                flag: ExternalFlag::Ef1,
+                expected: false,
+                target: 0x80,
+            },
+            &[0x3C, 0x80],
+        ),
+        (
+            "bn4 0x80",
+            Instruction::BranchExternalFlag {
+                flag: ExternalFlag::Ef4,
+                expected: false,
+                target: 0x80,
+            },
+            &[0x3F, 0x80],
+        ),
+        (
             "str r1",
             Instruction::Store {
                 reg: Reg::new_masked(1),
             },
             &[0x51],
         ),
+        ("req", Instruction::ResetQ, &[0x7A]),
+        ("seq", Instruction::SetQ, &[0x7B]),
         (
             "plo r1",
             Instruction::PutLow {

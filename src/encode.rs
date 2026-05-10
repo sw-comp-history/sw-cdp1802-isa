@@ -8,7 +8,21 @@ pub fn encode(insn: &Instruction, out: &mut [u8]) -> Result<usize, EncodeError> 
         Instruction::Idle => encode_one(Opcode::Idle as u8, out),
         Instruction::Increment { reg } => encode_one(Opcode::Increment as u8 | reg.index_u8(), out),
         Instruction::Branch { target } => encode_two(Opcode::Branch as u8, target, out),
+        Instruction::BranchExternalFlag {
+            flag,
+            expected,
+            target,
+        } => {
+            let base = if expected {
+                Opcode::BranchExternalFlag as u8
+            } else {
+                Opcode::BranchNotExternalFlag as u8
+            };
+            encode_two(base + flag.index_u8() - 1, target, out)
+        }
         Instruction::Store { reg } => encode_one(Opcode::Store as u8 | reg.index_u8(), out),
+        Instruction::ResetQ => encode_one(Opcode::ResetQ as u8, out),
+        Instruction::SetQ => encode_one(Opcode::SetQ as u8, out),
         Instruction::PutLow { reg } => encode_one(Opcode::PutLow as u8 | reg.index_u8(), out),
         Instruction::PutHigh { reg } => encode_one(Opcode::PutHigh as u8 | reg.index_u8(), out),
         Instruction::LoadImmediate { value } => encode_two(Opcode::LoadImmediate as u8, value, out),

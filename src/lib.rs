@@ -9,6 +9,7 @@ pub mod encode;
 pub mod opcode;
 pub mod register;
 
+pub use branch::ExternalFlag;
 pub use opcode::Opcode;
 pub use register::{Reg, parse_register};
 
@@ -35,12 +36,31 @@ pub struct Cdp1802;
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Instruction {
     Idle,
-    Increment { reg: Reg },
-    Branch { target: u8 },
-    Store { reg: Reg },
-    PutLow { reg: Reg },
-    PutHigh { reg: Reg },
-    LoadImmediate { value: u8 },
+    Increment {
+        reg: Reg,
+    },
+    Branch {
+        target: u8,
+    },
+    BranchExternalFlag {
+        flag: ExternalFlag,
+        expected: bool,
+        target: u8,
+    },
+    Store {
+        reg: Reg,
+    },
+    ResetQ,
+    SetQ,
+    PutLow {
+        reg: Reg,
+    },
+    PutHigh {
+        reg: Reg,
+    },
+    LoadImmediate {
+        value: u8,
+    },
 }
 
 impl Instruction {
@@ -49,7 +69,16 @@ impl Instruction {
             Instruction::Idle => Opcode::Idle,
             Instruction::Increment { .. } => Opcode::Increment,
             Instruction::Branch { .. } => Opcode::Branch,
+            Instruction::BranchExternalFlag { expected, .. } => {
+                if expected {
+                    Opcode::BranchExternalFlag
+                } else {
+                    Opcode::BranchNotExternalFlag
+                }
+            }
             Instruction::Store { .. } => Opcode::Store,
+            Instruction::ResetQ => Opcode::ResetQ,
+            Instruction::SetQ => Opcode::SetQ,
             Instruction::PutLow { .. } => Opcode::PutLow,
             Instruction::PutHigh { .. } => Opcode::PutHigh,
             Instruction::LoadImmediate { .. } => Opcode::LoadImmediate,
@@ -87,7 +116,17 @@ impl sw_isa_core::Architecture for Cdp1802 {
             Instruction::Idle => write!(w, "idl"),
             Instruction::Increment { reg } => write!(w, "inc {}", reg.name()),
             Instruction::Branch { target } => write!(w, "br 0x{target:02x}"),
+            Instruction::BranchExternalFlag {
+                flag,
+                expected,
+                target,
+            } => {
+                let prefix = if *expected { "b" } else { "bn" };
+                write!(w, "{prefix}{} 0x{target:02x}", flag.index_u8())
+            }
             Instruction::Store { reg } => write!(w, "str {}", reg.name()),
+            Instruction::ResetQ => write!(w, "req"),
+            Instruction::SetQ => write!(w, "seq"),
             Instruction::PutLow { reg } => write!(w, "plo {}", reg.name()),
             Instruction::PutHigh { reg } => write!(w, "phi {}", reg.name()),
             Instruction::LoadImmediate { value } => write!(w, "ldi 0x{value:02x}"),
