@@ -1,0 +1,9 @@
+[package]
+name = "sw-cdp1802-isa"
+version = "0.1.0"
+edition = "2024"
+description = "RCA CDP1802 ISA description: opcodes, encoding, decoding, disassembly"
+license = "MIT"
+
+[dependencies]
+sw-isa-core = { path = "../../sw-langtools/sw-isa-core" }
