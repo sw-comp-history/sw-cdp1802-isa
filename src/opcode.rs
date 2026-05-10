@@ -9,6 +9,8 @@ pub enum Opcode {
     BranchExternalFlag = 0x34,
     BranchNotExternalFlag = 0x3C,
     Store = 0x50,
+    Output = 0x60,
+    Input = 0x68,
     ResetQ = 0x7A,
     SetQ = 0x7B,
     PutLow = 0xA0,
@@ -25,6 +27,8 @@ impl Opcode {
             Opcode::BranchExternalFlag => "b-ef",
             Opcode::BranchNotExternalFlag => "bn-ef",
             Opcode::Store => "str",
+            Opcode::Output => "out",
+            Opcode::Input => "inp",
             Opcode::ResetQ => "req",
             Opcode::SetQ => "seq",
             Opcode::PutLow => "plo",
@@ -38,6 +42,8 @@ impl Opcode {
             Opcode::Idle
             | Opcode::Increment
             | Opcode::Store
+            | Opcode::Output
+            | Opcode::Input
             | Opcode::ResetQ
             | Opcode::SetQ
             | Opcode::PutLow

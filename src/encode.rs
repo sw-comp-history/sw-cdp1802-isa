@@ -20,6 +20,13 @@ pub fn encode(insn: &Instruction, out: &mut [u8]) -> Result<usize, EncodeError> 
             };
             encode_two(base + flag.index_u8() - 1, target, out)
         }
+        Instruction::Output { port } if (1..=7).contains(&port) => {
+            encode_one(Opcode::Output as u8 | port, out)
+        }
+        Instruction::Input { port } if (1..=7).contains(&port) => {
+            encode_one(Opcode::Input as u8 | port, out)
+        }
+        Instruction::Output { .. } | Instruction::Input { .. } => Err(EncodeError::InvalidOperands),
         Instruction::Store { reg } => encode_one(Opcode::Store as u8 | reg.index_u8(), out),
         Instruction::ResetQ => encode_one(Opcode::ResetQ as u8, out),
         Instruction::SetQ => encode_one(Opcode::SetQ as u8, out),

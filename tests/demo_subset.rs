@@ -98,6 +98,10 @@ fn demo_subset_exact_encodings() {
             },
             &[0x51],
         ),
+        ("out 1", Instruction::Output { port: 1 }, &[0x61]),
+        ("out 7", Instruction::Output { port: 7 }, &[0x67]),
+        ("inp 1", Instruction::Input { port: 1 }, &[0x69]),
+        ("inp 7", Instruction::Input { port: 7 }, &[0x6F]),
         ("req", Instruction::ResetQ, &[0x7A]),
         ("seq", Instruction::SetQ, &[0x7B]),
         (
@@ -132,6 +136,14 @@ fn demo_subset_exact_encodings() {
         assert_eq!(m, bytes.len(), "{name}: decoded length");
         assert_eq!(decoded, *insn, "{name}: decoded instruction");
     }
+}
+
+#[test]
+fn port_zero_opcode_is_not_a_port_instruction() {
+    assert!(Cdp1802::decode(&[0x60], Addr(0)).is_err());
+    assert!(Cdp1802::decode(&[0x68], Addr(0)).is_err());
+    assert!(Cdp1802::encode(&Instruction::Output { port: 0 }, &mut [0]).is_err());
+    assert!(Cdp1802::encode(&Instruction::Input { port: 8 }, &mut [0]).is_err());
 }
 
 #[test]

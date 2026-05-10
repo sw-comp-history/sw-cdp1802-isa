@@ -47,6 +47,8 @@ pub fn decode(bytes: &[u8]) -> Result<(Instruction, usize), DecodeError> {
             },
             1,
         )),
+        0x61..=0x67 => Ok((Instruction::Output { port: first & 0x07 }, 1)),
+        0x69..=0x6F => Ok((Instruction::Input { port: first & 0x07 }, 1)),
         0x7A => Ok((Instruction::ResetQ, 1)),
         0x7B => Ok((Instruction::SetQ, 1)),
         0xA0..=0xAF => Ok((

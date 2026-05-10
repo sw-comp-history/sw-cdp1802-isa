@@ -47,6 +47,12 @@ pub enum Instruction {
         expected: bool,
         target: u8,
     },
+    Output {
+        port: u8,
+    },
+    Input {
+        port: u8,
+    },
     Store {
         reg: Reg,
     },
@@ -76,6 +82,8 @@ impl Instruction {
                     Opcode::BranchNotExternalFlag
                 }
             }
+            Instruction::Output { .. } => Opcode::Output,
+            Instruction::Input { .. } => Opcode::Input,
             Instruction::Store { .. } => Opcode::Store,
             Instruction::ResetQ => Opcode::ResetQ,
             Instruction::SetQ => Opcode::SetQ,
@@ -124,6 +132,8 @@ impl sw_isa_core::Architecture for Cdp1802 {
                 let prefix = if *expected { "b" } else { "bn" };
                 write!(w, "{prefix}{} 0x{target:02x}", flag.index_u8())
             }
+            Instruction::Output { port } => write!(w, "out {port}"),
+            Instruction::Input { port } => write!(w, "inp {port}"),
             Instruction::Store { reg } => write!(w, "str {}", reg.name()),
             Instruction::ResetQ => write!(w, "req"),
             Instruction::SetQ => write!(w, "seq"),
