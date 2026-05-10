@@ -1,3 +1,33 @@
-//! Encoding helpers (operands -> bytes).
-//!
-//! Skeleton; hand-fill in saga steps 7-11.
+//! Encoding helpers for the demo subset.
+
+use crate::{Instruction, Opcode};
+use sw_isa_core::EncodeError;
+
+pub fn encode(insn: &Instruction, out: &mut [u8]) -> Result<usize, EncodeError> {
+    match *insn {
+        Instruction::Idle => encode_one(Opcode::Idle as u8, out),
+        Instruction::Increment { reg } => encode_one(Opcode::Increment as u8 | reg.index_u8(), out),
+        Instruction::Branch { target } => encode_two(Opcode::Branch as u8, target, out),
+        Instruction::Store { reg } => encode_one(Opcode::Store as u8 | reg.index_u8(), out),
+        Instruction::PutLow { reg } => encode_one(Opcode::PutLow as u8 | reg.index_u8(), out),
+        Instruction::PutHigh { reg } => encode_one(Opcode::PutHigh as u8 | reg.index_u8(), out),
+        Instruction::LoadImmediate { value } => encode_two(Opcode::LoadImmediate as u8, value, out),
+    }
+}
+
+fn encode_one(byte: u8, out: &mut [u8]) -> Result<usize, EncodeError> {
+    if out.is_empty() {
+        return Err(EncodeError::BufferTooSmall);
+    }
+    out[0] = byte;
+    Ok(1)
+}
+
+fn encode_two(first: u8, second: u8, out: &mut [u8]) -> Result<usize, EncodeError> {
+    if out.len() < 2 {
+        return Err(EncodeError::BufferTooSmall);
+    }
+    out[0] = first;
+    out[1] = second;
+    Ok(2)
+}
