@@ -147,6 +147,27 @@ fn port_zero_opcode_is_not_a_port_instruction() {
 }
 
 #[test]
+fn register_parser_accepts_decimal_and_hex_style_names() {
+    for index in 0..16 {
+        let decimal = format!("R{index}");
+        assert_eq!(sw_cdp1802_isa::parse_register(&decimal), Reg::new(index));
+    }
+
+    for (name, index) in [
+        ("RA", 10),
+        ("RB", 11),
+        ("RC", 12),
+        ("RD", 13),
+        ("RE", 14),
+        ("RF", 15),
+        ("ra", 10),
+        ("rf", 15),
+    ] {
+        assert_eq!(sw_cdp1802_isa::parse_register(name), Reg::new(index));
+    }
+}
+
+#[test]
 fn demo_program_decodes_to_expected_instruction_stream() {
     let mut offset = 0usize;
     let mut decoded = Vec::new();

@@ -32,14 +32,26 @@ impl sw_isa_core::register::RegisterId for Reg {
 }
 
 const REGISTER_NAMES: [&str; 16] = [
-    "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "r14",
-    "r15",
+    "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "ra", "rb", "rc", "rd", "re", "rf",
 ];
 
 pub fn parse_register(s: &str) -> Option<Reg> {
     let rest = s.strip_prefix('r').or_else(|| s.strip_prefix('R'))?;
-    let value = parse_decimal_u8(rest)?;
+    let value = parse_register_index(rest)?;
     Reg::new(value)
+}
+
+fn parse_register_index(s: &str) -> Option<u8> {
+    if s.len() == 1 {
+        let b = s.as_bytes()[0];
+        return match b {
+            b'0'..=b'9' => Some(b - b'0'),
+            b'a'..=b'f' => Some(10 + b - b'a'),
+            b'A'..=b'F' => Some(10 + b - b'A'),
+            _ => None,
+        };
+    }
+    parse_decimal_u8(s)
 }
 
 fn parse_decimal_u8(s: &str) -> Option<u8> {
