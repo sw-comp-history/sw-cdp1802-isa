@@ -58,6 +58,9 @@ pub enum Instruction {
     },
     ResetQ,
     SetQ,
+    GetLow {
+        reg: Reg,
+    },
     PutLow {
         reg: Reg,
     },
@@ -67,6 +70,14 @@ pub enum Instruction {
     LoadImmediate {
         value: u8,
     },
+    SetX {
+        reg: Reg,
+    },
+    Add,
+    AddImmediate {
+        value: u8,
+    },
+    ShiftLeft,
 }
 
 impl Instruction {
@@ -87,9 +98,14 @@ impl Instruction {
             Instruction::Store { .. } => Opcode::Store,
             Instruction::ResetQ => Opcode::ResetQ,
             Instruction::SetQ => Opcode::SetQ,
+            Instruction::GetLow { .. } => Opcode::GetLow,
             Instruction::PutLow { .. } => Opcode::PutLow,
             Instruction::PutHigh { .. } => Opcode::PutHigh,
             Instruction::LoadImmediate { .. } => Opcode::LoadImmediate,
+            Instruction::SetX { .. } => Opcode::SetX,
+            Instruction::Add => Opcode::Add,
+            Instruction::AddImmediate { .. } => Opcode::AddImmediate,
+            Instruction::ShiftLeft => Opcode::ShiftLeft,
         }
     }
 }
@@ -137,9 +153,14 @@ impl sw_isa_core::Architecture for Cdp1802 {
             Instruction::Store { reg } => write!(w, "str {}", reg.name()),
             Instruction::ResetQ => write!(w, "req"),
             Instruction::SetQ => write!(w, "seq"),
+            Instruction::GetLow { reg } => write!(w, "glo {}", reg.name()),
             Instruction::PutLow { reg } => write!(w, "plo {}", reg.name()),
             Instruction::PutHigh { reg } => write!(w, "phi {}", reg.name()),
             Instruction::LoadImmediate { value } => write!(w, "ldi 0x{value:02x}"),
+            Instruction::SetX { reg } => write!(w, "sex {}", reg.name()),
+            Instruction::Add => write!(w, "add"),
+            Instruction::AddImmediate { value } => write!(w, "adi 0x{value:02x}"),
+            Instruction::ShiftLeft => write!(w, "shl"),
         }
     }
 }

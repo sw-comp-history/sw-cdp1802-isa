@@ -13,9 +13,14 @@ pub enum Opcode {
     Input = 0x68,
     ResetQ = 0x7A,
     SetQ = 0x7B,
+    GetLow = 0x80,
     PutLow = 0xA0,
     PutHigh = 0xB0,
+    SetX = 0xE0,
+    Add = 0xF4,
     LoadImmediate = 0xF8,
+    AddImmediate = 0xFC,
+    ShiftLeft = 0xFE,
 }
 
 impl Opcode {
@@ -31,9 +36,14 @@ impl Opcode {
             Opcode::Input => "inp",
             Opcode::ResetQ => "req",
             Opcode::SetQ => "seq",
+            Opcode::GetLow => "glo",
             Opcode::PutLow => "plo",
             Opcode::PutHigh => "phi",
+            Opcode::SetX => "sex",
+            Opcode::Add => "add",
             Opcode::LoadImmediate => "ldi",
+            Opcode::AddImmediate => "adi",
+            Opcode::ShiftLeft => "shl",
         }
     }
 
@@ -46,12 +56,17 @@ impl Opcode {
             | Opcode::Input
             | Opcode::ResetQ
             | Opcode::SetQ
+            | Opcode::GetLow
             | Opcode::PutLow
-            | Opcode::PutHigh => 1,
+            | Opcode::PutHigh
+            | Opcode::SetX
+            | Opcode::Add
+            | Opcode::ShiftLeft => 1,
             Opcode::Branch
             | Opcode::BranchExternalFlag
             | Opcode::BranchNotExternalFlag
-            | Opcode::LoadImmediate => 2,
+            | Opcode::LoadImmediate
+            | Opcode::AddImmediate => 2,
         }
     }
 }

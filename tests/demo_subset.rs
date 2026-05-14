@@ -105,6 +105,13 @@ fn demo_subset_exact_encodings() {
         ("req", Instruction::ResetQ, &[0x7A]),
         ("seq", Instruction::SetQ, &[0x7B]),
         (
+            "glo r1",
+            Instruction::GetLow {
+                reg: Reg::new_masked(1),
+            },
+            &[0x81],
+        ),
+        (
             "plo r1",
             Instruction::PutLow {
                 reg: Reg::new_masked(1),
@@ -123,6 +130,20 @@ fn demo_subset_exact_encodings() {
             Instruction::LoadImmediate { value: 0x42 },
             &[0xF8, 0x42],
         ),
+        (
+            "sex r2",
+            Instruction::SetX {
+                reg: Reg::new_masked(2),
+            },
+            &[0xE2],
+        ),
+        ("add", Instruction::Add, &[0xF4]),
+        (
+            "adi 0x01",
+            Instruction::AddImmediate { value: 0x01 },
+            &[0xFC, 0x01],
+        ),
+        ("shl", Instruction::ShiftLeft, &[0xFE]),
     ];
 
     for (name, insn, bytes) in cases {

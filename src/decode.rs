@@ -51,6 +51,12 @@ pub fn decode(bytes: &[u8]) -> Result<(Instruction, usize), DecodeError> {
         0x69..=0x6F => Ok((Instruction::Input { port: first & 0x07 }, 1)),
         0x7A => Ok((Instruction::ResetQ, 1)),
         0x7B => Ok((Instruction::SetQ, 1)),
+        0x80..=0x8F => Ok((
+            Instruction::GetLow {
+                reg: Reg::new_masked(first),
+            },
+            1,
+        )),
         0xA0..=0xAF => Ok((
             Instruction::PutLow {
                 reg: Reg::new_masked(first),
@@ -63,10 +69,22 @@ pub fn decode(bytes: &[u8]) -> Result<(Instruction, usize), DecodeError> {
             },
             1,
         )),
+        0xE0..=0xEF => Ok((
+            Instruction::SetX {
+                reg: Reg::new_masked(first),
+            },
+            1,
+        )),
+        0xF4 => Ok((Instruction::Add, 1)),
         0xF8 => {
             let value = *bytes.get(1).ok_or(DecodeError::Truncated)?;
             Ok((Instruction::LoadImmediate { value }, 2))
         }
+        0xFC => {
+            let value = *bytes.get(1).ok_or(DecodeError::Truncated)?;
+            Ok((Instruction::AddImmediate { value }, 2))
+        }
+        0xFE => Ok((Instruction::ShiftLeft, 1)),
         _ => Err(DecodeError::Invalid),
     }
 }

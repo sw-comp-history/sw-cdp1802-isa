@@ -30,9 +30,14 @@ pub fn encode(insn: &Instruction, out: &mut [u8]) -> Result<usize, EncodeError> 
         Instruction::Store { reg } => encode_one(Opcode::Store as u8 | reg.index_u8(), out),
         Instruction::ResetQ => encode_one(Opcode::ResetQ as u8, out),
         Instruction::SetQ => encode_one(Opcode::SetQ as u8, out),
+        Instruction::GetLow { reg } => encode_one(Opcode::GetLow as u8 | reg.index_u8(), out),
         Instruction::PutLow { reg } => encode_one(Opcode::PutLow as u8 | reg.index_u8(), out),
         Instruction::PutHigh { reg } => encode_one(Opcode::PutHigh as u8 | reg.index_u8(), out),
+        Instruction::SetX { reg } => encode_one(Opcode::SetX as u8 | reg.index_u8(), out),
+        Instruction::Add => encode_one(Opcode::Add as u8, out),
         Instruction::LoadImmediate { value } => encode_two(Opcode::LoadImmediate as u8, value, out),
+        Instruction::AddImmediate { value } => encode_two(Opcode::AddImmediate as u8, value, out),
+        Instruction::ShiftLeft => encode_one(Opcode::ShiftLeft as u8, out),
     }
 }
 
