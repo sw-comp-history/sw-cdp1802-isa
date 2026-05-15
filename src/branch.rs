@@ -3,7 +3,7 @@
 pub const BRANCH_PAGE_SIZE_BYTES: usize = 256;
 pub const BRANCH_TARGET_MIN: u16 = 0x00;
 pub const BRANCH_TARGET_MAX: u16 = 0xFF;
-pub const MAX_INSTRUCTION_BYTES: usize = 2;
+pub const MAX_INSTRUCTION_BYTES: usize = 3;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum ExternalFlag {
@@ -11,6 +11,29 @@ pub enum ExternalFlag {
     Ef2,
     Ef3,
     Ef4,
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum LongBranchCondition {
+    Always,
+    Q,
+    Zero,
+    DataFlag,
+    NotQ,
+    NotZero,
+    NotDataFlag,
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum LongSkipCondition {
+    Always,
+    Q,
+    Zero,
+    DataFlag,
+    NotQ,
+    NotZero,
+    NotDataFlag,
+    InterruptEnabled,
 }
 
 impl ExternalFlag {

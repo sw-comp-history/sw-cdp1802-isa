@@ -161,8 +161,14 @@ fn demo_subset_exact_encodings() {
 
 #[test]
 fn port_zero_opcode_is_not_a_port_instruction() {
-    assert!(Cdp1802::decode(&[0x60], Addr(0)).is_err());
-    assert!(Cdp1802::decode(&[0x68], Addr(0)).is_err());
+    assert_eq!(
+        Cdp1802::decode(&[0x60], Addr(0)).unwrap().0,
+        Instruction::Irx
+    );
+    assert_eq!(
+        Cdp1802::decode(&[0x68], Addr(0)).unwrap().0,
+        Instruction::Reserved68
+    );
     assert!(Cdp1802::encode(&Instruction::Output { port: 0 }, &mut [0]).is_err());
     assert!(Cdp1802::encode(&Instruction::Input { port: 8 }, &mut [0]).is_err());
 }
